@@ -1,34 +1,31 @@
 <?php
-include "include.php";
-pageHeader("TCP Lighting Controller");
 
-if( TOKEN != "" ){
-?>
-<div class="container" style="padding: 20px; background-color: #fff;">
-<h3>Set Date Time</h3><br />
-<?php	
-	if (strtoupper($_SERVER['REQUEST_METHOD']) == 'POST'){
-		
-		if( isset($_POST) && isset($_POST['dateTime']) && $_POST['dateTime'] != "" ){
+include 'include.php';
+pageHeader('TCP Lighting Controller');
+
+if (TOKEN != '') {
+    ?>
+    <div class="container" style="padding: 20px; background-color: #fff;">
+    <h3>Set Date Time</h3><br />
+    <?php
+	if (strtoupper($_SERVER['REQUEST_METHOD']) == 'POST') {
+		if (isset($_POST) && isset($_POST['dateTime']) && $_POST['dateTime'] != '') {
 		$time = $_POST['dateTime'];
-			$CMD = "cmd=AccountSetDateTime&data=<gip><version>1</version><token>".TOKEN."</token><datetime>".$time.":00</datetime></gip>";
+			$CMD = 'cmd=AccountSetDateTime&data=<gip><version>1</version><token>' . TOKEN . '</token><datetime>' . $time . ':00</datetime></gip>';
 			$result = getCurlReturn($CMD);
 			$array = xmlToArray($result);
 			pa($array);
 		}
-		
 	}
-	
-	//Get State of System Data
-	$CMD = "cmd=GWRBatch&data=<gwrcmds><gwrcmd><gcmd>AccountGetExtras</gcmd><gdata><gip><version>1</version><token>".TOKEN."</token></gip></gdata></gwrcmd></gwrcmds>&fmt=xml";
-	$result = getCurlReturn($CMD);
 
-	$array = xmlToArray($result);
+	//Get State of System Data
+	$CMD = 'cmd=GWRBatch&data=<gwrcmds><gwrcmd><gcmd>AccountGetExtras</gcmd><gdata><gip><version>1</version><token>' . TOKEN . '</token></gip></gdata></gwrcmd></gwrcmds>&fmt=xml';
+
+	$array = xmlToArray(getCurlReturn($CMD));
 
 	$time = $array["gwrcmd"]["gdata"]["gip"]["datetime"];
-	
+
 	//Get State of System Data
-	
 	?>
 	<style>
 		.ui-timepicker-div .ui-widget-header { margin-bottom: 8px; }
@@ -49,11 +46,11 @@ if( TOKEN != "" ){
 
 		/* Shortened version style */
 		.ui-timepicker-div.ui-timepicker-oneLine { padding-right: 2px; }
-		.ui-timepicker-div.ui-timepicker-oneLine .ui_tpicker_time, 
+		.ui-timepicker-div.ui-timepicker-oneLine .ui_tpicker_time,
 		.ui-timepicker-div.ui-timepicker-oneLine dt { display: none; }
 		.ui-timepicker-div.ui-timepicker-oneLine .ui_tpicker_time_label { display: block; padding-top: 2px; }
 		.ui-timepicker-div.ui-timepicker-oneLine dl { text-align: right; }
-		.ui-timepicker-div.ui-timepicker-oneLine dl dd, 
+		.ui-timepicker-div.ui-timepicker-oneLine dl dd,
 		.ui-timepicker-div.ui-timepicker-oneLine dl dd > div { display:inline-block; margin:0; }
 		.ui-timepicker-div.ui-timepicker-oneLine dl dd.ui_tpicker_minute:before,
 		.ui-timepicker-div.ui-timepicker-oneLine dl dd.ui_tpicker_second:before { content:':'; display:inline-block; }
@@ -63,9 +60,9 @@ if( TOKEN != "" ){
 		.ui-timepicker-div.ui-timepicker-oneLine .ui_tpicker_unit_hide:before{ display: none; }
 	</style>
 	<script>
-		$(function(){
+		$(function() {
 			$('#datetimepicker').datetimepicker({
-				inline:false,
+				inline: false,
 				dateFormat: "yy-mm-dd",
 				timeFormat: "HH:mm:ss",
 				Separator: " "
@@ -73,32 +70,26 @@ if( TOKEN != "" ){
 		});
 	</script>
 	<form method="post" action="setDateTime.php">
-	<p>Keep in mind that the bridge uses UTC time. Based on your timezone, you should probably set the time to: <?php echo gmdate("Y-m-d H:i:s"); ?></p>
+	<p>Keep in mind that the bridge uses UTC time. Based on your timezone, you should probably set the time to: <?php echo gmdate('Y-m-d H:i:s'); ?></p>
 		Set Time: <input id="datetimepicker" name="dateTime" type="text" value="<?php echo $time; ?>"/>
 		<input type="submit" value="Save" />
 	</form>
 	<?php
 	echo '<br /><h3>Other Info</h3><br /><hr /><br />';
-	
-	
-	
+
 	$CMD = "cmd=GWRBatch&data=<gwrcmds><gwrcmd><gcmd>AccountGetExtras</gcmd><gdata><gip><version>1</version><token>".TOKEN."</token></gip></gdata></gwrcmd></gwrcmds>&fmt=xml";
 	$result = getCurlReturn($CMD);
 	$array = xmlToArray($result);
 	$time = $array["gwrcmd"]["gdata"]["gip"]["datetime"];
 	echo "<p>Bridge Time: " . $time. "</p>";
-	
-	
+
 	$CMD = "cmd=GWRBatch&data=<gwrcmds><gwrcmd><gcmd>GatewayGetInfo</gcmd><gdata><gip><version>1</version><token>".TOKEN."</token></gip></gdata></gwrcmd></gwrcmds>&fmt=xml";
 	$result = getCurlReturn($CMD);
 	$array = xmlToArray($result);
-	$array =  $array["gwrcmd"]["gdata"]["gip"]["gateway"];
+	$array = $array["gwrcmd"]["gdata"]["gip"]["gateway"];
 	pa($array);
-	
-	
 }
 ?>
 </div>
 <?php
 pageFooter();
-?>
