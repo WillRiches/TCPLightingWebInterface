@@ -1,11 +1,10 @@
 <?php
-define('LIGTHING_BRIDGE_IP', '192.168.1.TCP'); // IP address of TCP Bridge/Gateway
+define('LIGTHING_BRIDGE_IP', '192.168.0.4'); // IP address of TCP Bridge/Gateway
 define('LIGHTING_BRIDGE_PORT', '443'); // 443 for new firmware, 80 for legacy - If you don't know, leave it at 443
 define('LOCAL_URL', 'http://localhost'); // Address of your web server running this - this is used in runSchedule to call the API
 
 define('USER_EMAIL', 'you@email.com'); // I think this is so you don't have to regenerate tokens if you run this script elsewhere
 define('USER_PASSWORD', 'can-be-anything'); // Can be anything
-define('USE_TOKEN_FILE', 1); // Store the token in a file vs hard coding it below otherwise fill in line 51
 
 define('FORCE_FADE_ON', 0); // Makes it so when lights are turned off they fade to 0 (Like Philips Bulbs)
 define('FORCE_FADE_OFF', 0); // Makes it so when lights are turned on they fade to their assigned value from 0 (Like Philips Bulbs)
@@ -29,22 +28,12 @@ define('EXTERNAL_PORT', 443); // If you wish to use an alternate external port c
 
 define('SCHEME', (LIGHTING_BRIDGE_PORT == 80) ? 'http' : 'https'); // Don't modify
 
-$token = '';
-
-if (SCHEME == 'http') {
-    $token = 'NotRequired';
-}
-
-if (file_exists('tcp.token')) {
-    $token = file_get_contents('tcp.token');
-}
-
-define('TOKEN', $token);
+define('TOKEN', '');
 
 define('USE_LOCAL_API_IP', 1);
 define('LOG_DIR', dirname(__FILE__) . DIRECTORY_SEPARATOR . 'logs');
 
 date_default_timezone_set('Europe/London');
 
-define('LATITUDE', 43.59);
-define('LONGITUDE', -80.24);
+define('LATITUDE', 52);
+define('LONGITUDE', -1.4);

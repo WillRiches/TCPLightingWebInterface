@@ -189,8 +189,7 @@
 			range: "min",
 			min: 0,
 			max: 100,
-			//value: $(this).attr('data-level'),
-			create: function( event, ui ) {
+			create: function(event, ui) {
 				$(this).slider("option", "value", $(this).parent().find("input[name='DIM_SCENE']").val());
 			},
 			stop: function(event, ui) {
@@ -202,7 +201,6 @@
 		});
 
 		$('.roomToggle').change(function() {
-			console.log( $(this).attr('value') + ( $(this).prop('checked') ? ' checked' : '' ));
 			if ($(this).prop('checked') == true) {
 				//toggling on the room
 				$(this).closest('.roomSceneContainer').find('.room-controls').removeClass('controls-toggled-0').addClass('controls-toggled-1');
@@ -243,32 +241,20 @@
 		$('#saveScene').click(function(event) {
 			event.preventDefault();
 
-			console.log("here");
-
 			$('.switch-val-0 .switch input.device-toggle').each(function() {
 				$(this).attr('value', 0); //fix for non zeroed out switches
 			});
 
-			/*To Do - In Progress*/
-
 			var rooms = [];
 			var devices = [];
 
-
-			//get rooms, then devices
 			$('.roomSceneContainer').each(function() {
-
-				//console.log( $(this).attr('data-room-name') + " Room ID: " + $(this).attr('data-room-id') + " - toggled: " + $(this).find(' > .EnabledOrNot > input.roomToggle').prop('checked'));
 				var rid = $(this).attr('data-room-id');
 				var rname = $(this).attr('data-room-name');
 				var ron = "";
 				var rval = "";
 
-
-				//if checked, get the on or off setting,
 				if ($(this).find(' > .EnabledOrNot > input.roomToggle').prop('checked') == true ) {
-					//if on, get slider value
-
 					if ($(this).find('.control-switch input.device-toggle').prop('checked') == true ) {
 						ron = 1;
 						console.log("Room " + $(this).attr('data-room-name') + " is set to ON.");
@@ -284,12 +270,10 @@
 					rooms.push({ rid: rid, name: rname, toggled : ron, value: rval, renabled: 1  });
 
 				} else {
-					//if off, check rooms
 					$(this).find('.roomDeviceContainer').each(function() {
 						var did = $(this).attr('data-device-id');
 						var don = "";
 						var dval = "";
-
 
 						var dname = $(this).find(' > p').html();
 						if ($(this).find('.EnabledOrNot > input.deviceToggle').prop('checked') == true ) {
@@ -297,10 +281,6 @@
 							//check if device is set to ON or OFF.
 							if ($(this).find('.control-switch input.device-toggle').attr('value') == 1 ) {
 								don = 1;
-								console.log( dname + " is set to ON");
-
-								//get value.
-								console.log("Light is set to: " + $(this).find('.control-slider input.value-slider').attr('value'));
 								dval = $(this).find('.control-slider input.value-slider').attr('value');
 							} else {
 								console.log( dname + " is set to OFF");
@@ -309,13 +289,9 @@
 							}
 
 							devices.push( { did: did, name: dname, toggled: don, value: dval, enabled: 1 } );
-						} else {
-							//ignore device
-							console.log(dname + " not part of scene.");
 						}
 					});
 				}
-
 			});
 
 			var sID = $('#sceneID').val();
@@ -324,7 +300,6 @@
 			var enabled = $('input[name="sceneActive"]:checked').attr('value');
 			var schedule = 0;
 
-			//schedule
 			if ($('.sched-switch input').prop("checked")) {
 				var startTime = ( $('#startHour').val() == "sunrise" || $('#startHour').val() == "sunset" ) ? $('#startHour').val() : $('#startHour').val() + ':' + $('#startMin').val();
 				var stopTime = ( $('#stopHour').val() == "sunrise" || $('#stopHour').val() == "sunset" ) ? $('#stopHour').val() : $('#stopHour').val() + ':' + $('#stopMin').val();
@@ -356,15 +331,23 @@
 					'stoptime' : stopTime,
 					'every' : every
 				};
-
-
 			}
 
-			var scene = {action : "save", sceneID: sID, name: sName, icon: icon,  rooms: rooms, devices: devices, active: enabled, schedule : schedule };
+			var scene = {
+			    action : "save",
+			    sceneID: sID,
+			    name: sName,
+			    icon: icon,
+			    rooms: rooms,
+			    devices: devices,
+			    active: enabled,
+			    schedule : schedule
+			};
 
-			$.post( "scenescreatedit.php",  scene ).done( function( data ) {
+			$.post("scenescreatedit.php",  scene ).done( function(data) {
 				console.log("Response: " + data);
-				var json =  jQuery.parseJSON( data );
+				var json =  jQuery.parseJSON(data);
+
 				if (json.resp.rc == 200 ) {
 					window.alert("Scene Saved");
 					$('#scene-id-' + sID ).removeClass("scene-disabled scene-enabled");
@@ -452,10 +435,11 @@
 		});
 	});
 </script>
-<?php
-	echo '<div class="roomContainer" style="padding: 20px;">';
-	echo '<h2>Scenes / Smart Control</h2>';
 
+<div class="container" style="padding: 20px;">
+<h2>Scenes / Smart Control</h2>
+
+<?php
 	$CMD = "cmd=SceneGetListDetails&data=<gip><version>1</version><token>".TOKEN."</token><bigicon>1</bigicon></gip>";
 	$result = getCurlReturn($CMD);
 	$array = xmlToArray($result);
@@ -777,7 +761,7 @@
 			</div>
 			<?php
 
-			$CMD = 'cmd=GWRBatch&data=<gwrcmds><gwrcmd><gcmd>RoomGetCarousel</gcmd><gdata><gip><version>1</version><token>'.TOKEN.'</token><fields>name,image,imageurl,control,power,product,class,realtype,status</fields></gip></gdata></gwrcmd></gwrcmds>&fmt=xml';
+			$CMD = 'cmd=GWRBatch&data=<gwrcmds><gwrcmd><gcmd>RoomGetCarousel</gcmd><gdata><gip><version>1</version><token>'.TOKEN.'</token><fields>name,image,imageurl,control,power,product,class,realtype,status</fields></gip></gdata></gwrcmd></gwrcmds>';
 			$result = getCurlReturn($CMD);
 			$array = xmlToArray($result);
 			if (isset( $array['gwrcmd']['gdata']['gip']['room'] )) {

@@ -167,7 +167,7 @@ $(function() {
 	<option>Select a Device | Room | Scene</option>
 <?php
 //Get State of System Data
-	$CMD = "cmd=GWRBatch&data=<gwrcmds><gwrcmd><gcmd>RoomGetCarousel</gcmd><gdata><gip><version>1</version><token>".TOKEN."</token><fields>name,image,imageurl,control,power,product,class,realtype,status</fields></gip></gdata></gwrcmd></gwrcmds>&fmt=xml";
+	$CMD = "cmd=GWRBatch&data=<gwrcmds><gwrcmd><gcmd>RoomGetCarousel</gcmd><gdata><gip><version>1</version><token>".TOKEN."</token><fields>name,image,imageurl,control,power,product,class,realtype,status</fields></gip></gdata></gwrcmd></gwrcmds>";
 	$result = getCurlReturn($CMD);
 	$array = xmlToArray($result);
 	if (isset( $array["gwrcmd"]["gdata"]["gip"]["room"] )) {

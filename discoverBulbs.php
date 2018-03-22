@@ -6,7 +6,7 @@
 
 	function getDeviceIDs() {
 		//get system state
-		$CMD = "cmd=GWRBatch&data=<gwrcmds><gwrcmd><gcmd>RoomGetCarousel</gcmd><gdata><gip><version>1</version><token>".TOKEN."</token><fields>name,image,imageurl,control,power,product,class,realtype,status</fields></gip></gdata></gwrcmd></gwrcmds>&fmt=xml";
+		$CMD = "cmd=GWRBatch&data=<gwrcmds><gwrcmd><gcmd>RoomGetCarousel</gcmd><gdata><gip><version>1</version><token>".TOKEN."</token><fields>name,image,imageurl,control,power,product,class,realtype,status</fields></gip></gdata></gwrcmd></gwrcmds>";
 		$result = getCurlReturn($CMD);
 		$array = xmlToArray($result);
 		if (!isset($array["gwrcmd"])) {
@@ -49,7 +49,7 @@
 	$NOW_DEVICES = array();
 	ob_flush();
 	flush ();
-	echo '<div class="roomContainer" style="padding: 20px;">';
+	echo '<div style="padding: 20px;">';
 
 		echo "<p>Current State: ".sizeof($BASE_DEVICES)." Devices.</p>";
 		echo "<p>Searching for new devices...</p>";

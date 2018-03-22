@@ -70,7 +70,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) == 'POST') {
 
 		header('Location: info.php?did=' . $did);
 	} else if (isset($_POST['rid']) && $_POST['rid'] != '') {
-		$rid = $_POST['rid'];
+        $rid = $_POST['rid'];
 		$name =  $_POST['name'];
 		$color = $_POST['color'];
 
@@ -91,9 +91,7 @@ if (isset($_REQUEST['did']) && $_REQUEST['did'] != '' ) {
 	?>
 
 	<?php
-	echo '<div class="roomContainer" style="background-color: #fff; padding: 20px; border: 1px solid #000;">';
-	//echo '<h2>Device Info</h2>';
-	//echo '<p><b>Device ID:'.$did.'</b></p>';
+	echo '<div style="background-color: #fff; padding: 20px; border: 1px solid #000;">';
 
 	$CMD = 'cmd=DeviceGetInfo&data=<gip><version>1</version><token>'.TOKEN.'</token><did>'.$did.'</did><fields>name,power,product,class,image,control,realtype,other,status</fields></gip>';
 
@@ -107,12 +105,9 @@ if (isset($_REQUEST['did']) && $_REQUEST['did'] != '' ) {
 				var did = $(this).attr('data-deviceID');
 				var c = confirm("Are you sure you wish to delete the device?");
 				if (c) {
-					//var fd = confirm("Do you want to 'Full' Delete? - No puts device into detection mode and will add it to first room");
-					//if (fd) { fd = 1; } else { fd = 0; }
 					var fd = 0;
 
-					$.get( "info.php?delete=" + did + "&fullDelete=" + fd, function( data ) {
-						console.log( data );
+					$.get("info.php?delete=" + did + "&fullDelete=" + fd, function(data) {
 						window.location = "index.php";
 					});
 				}
@@ -203,7 +198,7 @@ if (isset($_REQUEST['did']) && $_REQUEST['did'] != '' ) {
 	echo '</div>';
 	?>
 	</div>
-	<div id="arrayDump" class="roomContainer" style="padding: 20px;">
+	<div id="arrayDump" style="padding: 20px;">
 	<?php
 	pa( $array );
 	?>
@@ -220,7 +215,7 @@ if (isset($_REQUEST['rid']) && $_REQUEST['rid'] != '' ) {
 
 	$room = xmlToArray(getCurlReturn($CMD));
 
-	echo '<div class="roomContainer" style="background-color: #fff; padding: 20px; border: 1px solid #000; margin-top: 20px;">';
+	echo '<div>';
 	?>
 	<form method="post" action="info.php" enctype="multipart/form-data">
 		<fieldset>
@@ -255,7 +250,7 @@ if (isset($_REQUEST['rid']) && $_REQUEST['rid'] != '' ) {
 		</fieldset>
 		</form>
 			<?php
-			echo '<div class="roomContainer" data-room-id="'. $rid.'" style="margin-top:20px;">';
+			echo '<div data-room-id="'. $rid.'" style="margin-top:20px;">';
 			$DEVICES = [];
 			$deviceCount = 0;
 			if (!is_array($room['device'])) {
@@ -286,11 +281,7 @@ if (isset($_REQUEST['rid']) && $_REQUEST['rid'] != '' ) {
 					foreach ($DEVICES as $device) {
 
 						echo '<div class="'.((isset($device['offline']) && $device['offline'] == 1) ? 'unplugged' : 'plugged' ).' device '.($device['state'] == 1 ? 'light-on' : 'light-off' ).' '.($device['prodtype'] == 'Light Fixture' ? 'light-fixture' : '' ).'" data-device-id="'.$device['did'].'">'; //power > 0 then enabled
-							//level = brightness
-							//state = on or off
-
-							echo '<p style="display: block !important;">'.$device['name'].' <a href="info.php?did='.$device['did'].'"><img src="css/images/info.png"/></a></p>';
-
+							echo '<p style="display: block !important;">'.$device['name'].' <a href="info.php?did='.$device['did'].'"><span class="fa fa-edit"></span></a></p>';
 							echo '<button data-device-id="'.$device['did'].'" class="onOffDeviceToggleButton buttonOn">On</button> | <button data-device-id="'.$device['did'].'" class="onOffDeviceToggleButton buttonOff">Off</button>';
 							echo '<div class="clear"></div>';
 							echo '<p>Brightness:</p>';
@@ -298,7 +289,6 @@ if (isset($_REQUEST['rid']) && $_REQUEST['rid'] != '' ) {
 						echo '</div>';
 						$roomBrightness += (isset($device['level']) ? $device['level'] : 100);
 						$roomDevices++;
-
 					}
 					echo '</div>';
 
@@ -316,7 +306,7 @@ if (isset($_REQUEST['rid']) && $_REQUEST['rid'] != '' ) {
 	echo '</div>';
 
 	?>
-	<div id="arrayDump" class="roomContainer" style="padding: 20px;">
+	<div id="arrayDump" style="padding: 20px;">
         <?php
         pa($room);
         ?>

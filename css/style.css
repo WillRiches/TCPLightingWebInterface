@@ -5,11 +5,6 @@ html *{
 
 html, body{ margin: 0;}
 
-body{
-	background-image:url(grey_wash_wall.png);
-	background-repeat: repeat;
-}
-
 p{
 	margin-top: 10px;
 	margin-bottom: 10px;
@@ -25,20 +20,17 @@ p{
 	text-align: right;
 }
 
-#headerBar a{ margin-right: 30px; color: #fff; }
-
-#toolBar,
-.container,
-.roomContainer{ max-width: 1280px; margin: 0px auto; margin-bottom: 40px; padding: 0px; clear: both; }
-
-#toolBar{
-	background-color: #fff;
+a.info {
 	display: block;
-	padding: 10px 20px;
-	border: 1px solid #000;
+	height: 30px;
+	line-height: 30px;
+	width: 30px;
+	float: right;
+	text-align: center;
+	top: -1px;
+	right: -1px;
+	position: relative;
 }
-
-a.info{ display: block; height: 30px; line-height: 30px; width: 30px; float: right; text-align: center; border: 1px solid #000; background-color: #fff; top: -1px; right: -1px; position: relative; }
 
 .room-controls{ padding: 10px; }
 
@@ -66,7 +58,6 @@ a.info{ display: block; height: 30px; line-height: 30px; width: 30px; float: rig
 
 .device{
 	width: 200px;
-	height: 200px;
 	margin-right: 20px;
 	margin-bottom: 20px;
 	padding: 10px;
@@ -82,25 +73,18 @@ a.info{ display: block; height: 30px; line-height: 30px; width: 30px; float: rig
 
 .light-on{background-color: rgba(255,255,0,1); }
 
-.device{ background-image: url('images/genericbulbicon.png');}
-
-.device.light-fixture{ background-image: url('images/genericmultibulbicon.png'); }
-
 .clear{ clear: both; width: 100%; }
 
 .device.light-fixture.unplugged,
-.unplugged{ 
+.unplugged{
 	background-image: url(unplugged.png);
-	background-repeat: no-repeat; 
+	background-repeat: no-repeat;
 }
-
-
-
-
 
 #arrayDump::before{
 	content: 'Click to Show Array info';
 }
+
 #arrayDump{
 	height: 20px;
 	overflow: hidden;
@@ -115,30 +99,12 @@ a.info{ display: block; height: 30px; line-height: 30px; width: 30px; float: rig
 
 #arrayDump.toggled{
 	height: auto;
-	
+
 }
 
 .room-color{
 	width: 100%;
 	clear: both;
-	display: block;
-	height: 30px;
-	text-align: left;
-	
-	
-}
-
-.room-name{
-	float: left;
-	width: auto;
-	padding: 0px 20px;
-	background-color: #fff;
-	border: 1px solid #000;
-	line-height: 28px;
-	top: -1px;
-	left: -1px;
-	position: relative;
-	color: #000;
 }
 
 .room-color-0{background-color: #000; color: #fff; }
@@ -163,7 +129,6 @@ a.info{ display: block; height: 30px; line-height: 30px; width: 30px; float: rig
 }
 
 .scene-container{
-	height: 200px;
 	width: 200px;
 	float: left;
 	margin: 20px;
@@ -256,7 +221,6 @@ input:checked + .slider:before {
   transform: translateX(26px);
 }
 
-/* Rounded sliders */
 .slider.round {
   border-radius: 34px;
 }
@@ -264,8 +228,6 @@ input:checked + .slider:before {
 .slider.round:before {
   border-radius: 50%;
 }
-
-/*End Switch*/
 
 div.control-button{
 	border: 1px solid #999;

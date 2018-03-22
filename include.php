@@ -11,7 +11,6 @@ function isLocalIPAddress($IPAddress)
     return (!filter_var($IPAddress, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE));
 }
 
-$REMOTE_IP = getenv('HTTP_CLIENT_IP') ?: getenv('HTTP_X_FORWARDED_FOR') ?: getenv('HTTP_X_FORWARDED') ?: getenv('HTTP_FORWARDED_FOR') ?: getenv('HTTP_FORWARDED') ?: getenv('REMOTE_ADDR');
 $CURRENT_PAGE_SCRIPT = basename($_SERVER['SCRIPT_FILENAME'], '.php');
 
 /**
@@ -71,36 +70,34 @@ function xmlToArray($string)
  */
 function getDevices()
 {
-    $CMD = 'cmd=GWRBatch&data=<gwrcmds><gwrcmd><gcmd>RoomGetCarousel</gcmd><gdata><gip><version>1</version><token>' . TOKEN . '</token><fields>name,image,imageurl,control,power,product,class,realtype,status</fields></gip></gdata></gwrcmd></gwrcmds>&fmt=xml';
+    $CMD = 'cmd=GWRBatch&data=<gwrcmds><gwrcmd><gcmd>RoomGetCarousel</gcmd><gdata><gip><version>1</version><token>' . TOKEN . '</token><fields>name,image,imageurl,control,power,product,class,realtype,status</fields></gip></gdata></gwrcmd></gwrcmds>';
     $result = getCurlReturn($CMD);
     $array = xmlToArray($result);
-    $DATA = $array['gwrcmd']['gdata']['gip']['room'];
-    $DEVICES = [];
+    $data = $array['gwrcmd']['gdata']['gip']['room'];
+    $devices = [];
 
-    if (isset($DATA['rid'])) {
-        $DATA = [$DATA];
+    if (isset($data['rid'])) {
+        $data = [$data];
     }
 
-    foreach ($DATA as $room) {
-        if (!is_array($room['device'])) {
-            // Todo: Inverse to remove empty if body
-        } else {
+    foreach ($data as $room) {
+        if (is_array($room['device'])) {
             $device = (array)$room['device'];
 
             if (isset($device['did'])) {
                 //item is singular device
-                $DEVICES[] = $room['device'];
+                $devices[] = $room['device'];
             } else {
                 for ($x = 0; $x < sizeof($device); $x++) {
                     if (isset($device[$x]) && is_array($device[$x]) && !empty($device[$x])) {
-                        $DEVICES[] = $device[$x];
+                        $devices[] = $device[$x];
                     }
                 }
             }
         }
     }
 
-    return $DEVICES;
+    return $devices;
 }
 
 function pageHeader($title)
@@ -124,76 +121,49 @@ function pageHeader($title)
         <meta name="theme-color" content="#ffffff">
         <link rel="stylesheet" href="css/jquery-ui.min.css"/>
         <link rel="stylesheet" href="css/style.css"/>
-        <script src="js/libs.js"></script>
+
+        <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css" />
+        <script src="jquery-3.3.1.min.js"></script>
+        <script src="bootstrap/js/bootstrap.min.js"></script>
+
+        <link rel="stylesheet" href="/lib/jQueryUI/jquery-ui.min.css" />
+        <script src="/lib/jQueryUI/jquery-ui.js"></script>
+
+        <link rel="stylesheet" href="/lib/font-awesome/css/fa-solid.css" />
+        <link rel="stylesheet" href="/lib/font-awesome/css/fontawesome.min.css" />
+
+        <!--<script src="js/libs.js"></script>-->
+
         <script>
-            //local IP
-            <?php
-            if (USE_LOCAL_API_IP ) {
-            global $REMOTE_IP;
-            if (isLocalIPAddress($REMOTE_IP)) {
-            ?>
-            var API_IP = '<?php echo LOCAL_URL; ?>';
-            <?php
-            } else {
-            ?>
             var API_IP = '<?php echo $_SERVER['REQUEST_URI']; ?>';
-            <?php
-            }
-            } else {
-            ?>
-            var API_IP = '<?php echo $_SERVER['REQUEST_URI']; ?>';
-            <?php
-            }
-            ?>
         </script>
         <script src="js/scripts.js"></script>
 
         <title><?php echo $title; ?></title>
     </head>
     <body>
-    <div id="headerBar">
-        <!-- check if not index -->
-        <?php if ($CURRENT_PAGE_SCRIPT != 'index') { ?>
-            <a href="index.php">Home</a>
-            <a href="index.php#scenes">Scenes</a>
-        <?php } else { ?>
-            <a href="#">Home</a>
-            <a href="#scenes">Scenes</a>
-        <?php } ?>
-        <a target="_blank" href="https://github.com/bren1818/TCPLightingWebInterface">GitHub Link</a>
-        <a target="_blank" href="https://github.com/bren1818/TCPLightingWebInterface/wiki">Wiki</a>
-        <a href="queryBuilder.php">IFTTT Query Builder</a>
-        <?php if (LOG_ACTIONS == 1 || LOG_API_CALLS == 1) {
-            echo '<a href="viewLogs.php">View Logs</a>';
-        }
-        ?>
-        <div class="clear"></div>
-    </div>
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="/">Lite Panel</a>
+        <div class="navbar-collapse collapse">
+            <div class="navbar-nav">
+                <a class="nav-item nav-link" href="index.php">Home</a>
+                <a class="nav-item nav-link" href="index.php#scenes">Scenes</a>
+                <a class="nav-item nav-link" href="scheduler.php">Scheduler</a>
+                <a class="nav-item nav-link" href="setDateTime.php">Set time</a>
+                <a class="nav-item nav-link" href="discoverBulbs.php">Scan</a>
+            </div>
+        </div>
+    </nav>
     <?php
 }
 
 function pageFooter()
 {
     ?>
-    <div id="toolBar">
-        <a href="scheduler.php">Lighting Scheduler</a>
-        | <a href="createDevice.php">Create Virtual Device</a>
-        | <a href="setDateTime.php">Set Bridge Date Time</a>
-        | <a href="discoverBulbs.php">Search for New Bulbs. (Beta)</a></div>
     </body>
     </html>
     <?php
-}
-
-if (!file_exists(LOG_DIR)) {
-    mkdir(LOG_DIR, 0755, true);
-}
-
-function APILog($string)
-{
-    if (LOG_API_CALLS == 1) {
-        file_put_contents(LOG_DIR . DIRECTORY_SEPARATOR . 'API-Request.log', date('Y-m-d H:i:s ') . $string . "\n", FILE_APPEND | LOCK_EX);
-    }
 }
 
 /**
@@ -221,18 +191,4 @@ function generateRandomString($length = 10)
     }
 
     return $randomString;
-}
-
-if (ALLOW_EXTERNAL_API_ACCESS == 1) {
-    // Allow external
-} else {
-    // If not allowing external access, check you're a local IP
-    if (!isLocalIPAddress($REMOTE_IP)) {
-        // If not local you can only hit the API
-        if ($CURRENT_PAGE_SCRIPT != 'api') {
-            echo 'This application is restricted to the internal network.';
-
-            exit;
-        }
-    }
 }

@@ -320,7 +320,7 @@
 					<td>
 						<select size="9" class="available" name="DEVICE_AVAILABLE" multiple>
 						<?php
-							$CMD = "cmd=GWRBatch&data=<gwrcmds><gwrcmd><gcmd>RoomGetCarousel</gcmd><gdata><gip><version>1</version><token>".TOKEN."</token><fields>name,image,imageurl,control,power,product,class,realtype,status</fields></gip></gdata></gwrcmd></gwrcmds>&fmt=xml";
+							$CMD = "cmd=GWRBatch&data=<gwrcmds><gwrcmd><gcmd>RoomGetCarousel</gcmd><gdata><gip><version>1</version><token>".TOKEN."</token><fields>name,image,imageurl,control,power,product,class,realtype,status</fields></gip></gdata></gwrcmd></gwrcmds>";
 							$result = getCurlReturn($CMD);
 							$array = xmlToArray($result);
 							if (isset( $array["gwrcmd"]["gdata"]["gip"]["room"] )) {

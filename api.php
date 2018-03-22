@@ -2,33 +2,10 @@
 
 include 'include.php';
 
-global $REMOTE_IP;
-
-if (REQUIRE_EXTERNAL_API_PASSWORD && ! isLocalIPAddress($REMOTE_IP)) {
-	$password = isset($_REQUEST['password']) ? $_REQUEST['password'] : '';
-	if ($password != EXTERNAL_API_PASSWORD) {
-		echo 'Invalid API Password';
-		APILog('Attempted API Access, invalid or no password provided.');
-
-		exit;
-	}
-}
-
-if (RESTRICT_EXTERNAL_PORT == 1 && ! isLocalIPAddress($REMOTE_IP)) {
-	if ($_SERVER['SERVER_PORT'] != EXTERNAL_PORT) {
-		echo 'Invalid Port';
-		APILog('Attempted API Access on invalid port');
-
-		exit;
-	}
-}
-
-$function = isset($_REQUEST['fx']) ? $_REQUEST['fx'] : ''; //Toggle or Brightness
-$type = isset($_REQUEST['type']) ? $_REQUEST['type'] : ''; //Device or Room
-$UID = isset($_REQUEST['uid']) ? $_REQUEST['uid'] : '';	//DeviceID or Room ID
-$val = isset($_REQUEST['val']) ? $_REQUEST['val'] : '';	//DeviceID or Room ID
-
-APILog('- Function: '.$function.' Type: ' . $type . ' ID : ' . $UID . ' Value: ' . $val);
+$function = isset($_REQUEST['fx']) ? $_REQUEST['fx'] : '';
+$type = isset($_REQUEST['type']) ? $_REQUEST['type'] : '';
+$UID = isset($_REQUEST['uid']) ? $_REQUEST['uid'] : '';
+$val = isset($_REQUEST['val']) ? $_REQUEST['val'] : '';
 
 $val = $val < 0 ? 0 : $val;
 $val = $val > 100 ? 100 : $val;
@@ -47,17 +24,11 @@ function dimOnOff($deviceInfoArray, $onOff)
 
 	// Check state
 	if ($onOff == 1) {
-		// Fade on
         //Todo: Should this be value 1?
         getCurlReturn($baseCommand . '<value>0</value><type>level</type>' . '</gip>');
-
-		// Set on
         getCurlReturn($baseCommand . '<value>1</value>' . '</gip>');
 	} else {
-        // Fade off
         getCurlReturn($baseCommand . '<value>0</value><type>level</type>' . '</gip>');
-
-        // Set off
         getCurlReturn($baseCommand . '<value>0</value>' . '</gip>');
 	}
 
@@ -96,7 +67,6 @@ if ($function != '' && $type != '' && $UID != '' && $val != '') {
 
 		switch ($function) {
 			case 'toggle':
-				//$val = 1 | 0 - on | off
 				$val = ($val > 0) ? 1 : 0;
 
 				if (($val == 1 && FORCE_FADE_ON) || ($val == 0 && FORCE_FADE_OFF)) {
@@ -178,7 +148,7 @@ if ($function != '' && $type != '' && $UID != '' && $val != '') {
 		$THE_ROOM = null;
 
 		//Get State of System Data
-		$CMD = 'cmd=GWRBatch&data=<gwrcmds><gwrcmd><gcmd>RoomGetCarousel</gcmd><gdata><gip><version>1</version><token>'.TOKEN.'</token><fields>name,image,imageurl,control,power,product,class,realtype,status</fields></gip></gdata></gwrcmd></gwrcmds>&fmt=xml';
+		$CMD = 'cmd=GWRBatch&data=<gwrcmds><gwrcmd><gcmd>RoomGetCarousel</gcmd><gdata><gip><version>1</version><token>'.TOKEN.'</token><fields>name,image,imageurl,control,power,product,class,realtype,status</fields></gip></gdata></gwrcmd></gwrcmds>';
 		$array = xmlToArray(getCurlReturn($CMD));
 		$DATA = $array['gwrcmd']['gdata']['gip']['room'];
 
@@ -207,7 +177,6 @@ if ($function != '' && $type != '' && $UID != '' && $val != '') {
         }
 
 		if ($function == 'toggle') {
-			//turn on | off
 			$tval = ($val > 0) ? 1 : 0;
 			if (($tval == 1 && FORCE_FADE_ON) || ($tval == 0 && FORCE_FADE_OFF)) {
 
@@ -510,7 +479,7 @@ if ($function != '' && $type != '' && $UID != '' && $val != '') {
         if ($function == 'getState' || $function == 'getDeviceState' || $function == 'getRoomState' || $function == 'getSceneState') {
             $sceneDeviceObjectsON = 0;
 
-            $CMD = 'cmd=GWRBatch&data=<gwrcmds><gwrcmd><gcmd>RoomGetCarousel</gcmd><gdata><gip><version>1</version><token>' . TOKEN . '</token><fields>name,image,imageurl,control,power,product,class,realtype,status</fields></gip></gdata></gwrcmd></gwrcmds>&fmt=xml';
+            $CMD = 'cmd=GWRBatch&data=<gwrcmds><gwrcmd><gcmd>RoomGetCarousel</gcmd><gdata><gip><version>1</version><token>' . TOKEN . '</token><fields>name,image,imageurl,control,power,product,class,realtype,status</fields></gip></gdata></gwrcmd></gwrcmds>';
 
             $array = xmlToArray(getCurlReturn($CMD));
 
@@ -668,10 +637,9 @@ if ($function != '' && $type != '' && $UID != '' && $val != '') {
             }
         }
 
-        //Todo: Fix typo in received
         echo json_encode([
             'error' => 'argument empty or invalid. Required: fx, type, UID, val',
-            'recieved' => $_REQUEST
+            'received' => $_REQUEST
         ]);
     }
 }
